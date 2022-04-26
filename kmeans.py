@@ -21,13 +21,13 @@ def init_centroids(k, inputs):
     
     centroids = []
     # m = np.shape(inputs)[0]
-
     for i in range(k):
         # r = np.random.randint(0, m-1)
         centroids.append(inputs[selected_indices[i]])
 
     # print(np.array(centroids).shape)
     return np.array(centroids)
+
 
 
 def assign_step(inputs, centroids):
@@ -66,13 +66,21 @@ def update_step(inputs, indices, k):
     # TODO
     # enumerate all inputs, add each input to matrix according to their corresponding index
     # matrix to represent new centroids in shape of k , 64 -> return after function
+
     matrix = np.zeros((k, inputs.shape[1])) #take order of indices into account
     vectors = np.zeros((k,1))
 
-    for i,j in enumerate(inputs):
-        matrix[indices[i]] = j
-        vectors[indices[i]] += 1
+    for i,j in zip(inputs,indices):
+        matrix[j] += i
+        vectors[j] += 1
     return np.divide(matrix.T,vectors.T).T
+    # matrix = np.zeros((k, inputs.shape[1])) #take order of indices into account
+   
+    # for i in range(k):
+    #     indices = np.where(indices == i)
+    #     clusters = inputs[indices]
+    #     matrix[i] = np.mean(clusters, axis=0)
+    # return matrix
 
 
 def kmeans(inputs, k, max_iter, tol):
@@ -89,20 +97,18 @@ def kmeans(inputs, k, max_iter, tol):
 
     for i in range(max_iter):
         indices = assign_step(inputs, centroids)
-        new_centroids = update_step(inputs,indices,k)
 
-        # dist_sq = np.array([min([np.inner(c-x,c-x) for c in centroids]) for x in inputs])
-        # probs = dist_sq/dist_sq.sum()
-        # cumulative_probs = probs.cumsum()
+        prev_centroids = centroids
 
+        centroids = update_step(inputs,indices,k)
         #calc differences between original and new centroids
-        x_1 = np.linalg.norm(new_centroids - centroids,axis=1)
-        x_2 = np.linalg.norm(centroids,axis=1)
+        x_1 = np.linalg.norm(centroids - prev_centroids,axis=1)
+        x_2 = np.linalg.norm(prev_centroids,axis=1)
         diff = x_1 / x_2
 
-        if np.any(tol > diff): #if it is below tolerance threshold
+
+        if (tol > np.max(diff)): #if it is below tolerance threshold
             break
             # return centroids ?
-        centroids = new_centroids  #replaces old centroids
     return centroids
 

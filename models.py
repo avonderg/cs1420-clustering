@@ -39,7 +39,6 @@ class KmeansClassifier(object):
         self.cluster_centers = kmeans(X, self.k, self.max_iter, self.tol) #perform k-means on the current label
 
 
-
     def predict(self, X, centroid_assignments):
         """
         Predicts the label of each sample in X based on the assigned centroid_assignments.
@@ -55,7 +54,7 @@ class KmeansClassifier(object):
 
         for j in range(len(X)): #i is index, j is corresponding vector
             subtracted = np.subtract(self.cluster_centers, X[j])
-            
+
             distance = np.linalg.norm(subtracted, axis=1)
             centroid = np.argmin(distance) #current centroid
             indices.append(centroid)
