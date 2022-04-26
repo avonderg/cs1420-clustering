@@ -14,7 +14,20 @@ def init_centroids(k, inputs):
     :return: a Numpy array of k cluster centroids, one per row
     """
     # TODO
-    pass
+    
+    indices = range(len(inputs))
+
+    selected_indices = sample(indices, k) #samples from that list of indices
+    
+    centroids = []
+    # m = np.shape(inputs)[0]
+
+    for i in range(k):
+        # r = np.random.randint(0, m-1)
+        centroids.append(inputs[selected_indices[i]])
+
+    # print(np.array(centroids).shape)
+    return np.array(centroids)
 
 
 def assign_step(inputs, centroids):
@@ -25,7 +38,21 @@ def assign_step(inputs, centroids):
     :return: a Numpy array of centroid indices, one for each row of the inputs
     """
     # TODO
-    pass
+
+    indices = []
+
+    for j in range(len(inputs)): #i is index, j is corresponding vector
+        subtracted = np.subtract(centroids, inputs[j])
+
+        distance = np.linalg.norm(subtracted, axis=1)
+        centroid = np.argmin(distance) #current centroid
+        indices.append(centroid)
+        # for centroid in centroids:
+        #     dist = np.linalg.norm(np.array(j-centroid), axis=1) #difference of two vectors + get norm
+        #     distances.append(dist)
+        # closest_centroid_index =  min(range(len(distances)), key=lambda x: distances[x])
+        # indices.append(closest_centroid_index)
+    return np.array(indices)
 
 
 def update_step(inputs, indices, k):
@@ -37,7 +64,15 @@ def update_step(inputs, indices, k):
     :return: a Numpy array of k cluster centroids, one per row
     """
     # TODO
-    pass
+    # enumerate all inputs, add each input to matrix according to their corresponding index
+    # matrix to represent new centroids in shape of k , 64 -> return after function
+    matrix = np.zeros((k, inputs.shape[1])) #take order of indices into account
+    vectors = np.zeros((k,1))
+
+    for i,j in enumerate(inputs):
+        matrix[indices[i]] = j
+        vectors[indices[i]] += 1
+    return np.divide(matrix.T,vectors.T).T
 
 
 def kmeans(inputs, k, max_iter, tol):
@@ -50,4 +85,24 @@ def kmeans(inputs, k, max_iter, tol):
     :return: a Numpy array of k cluster centroids, one per row
     """
     # TODO
-    pass
+    centroids = init_centroids(k,inputs)
+
+    for i in range(max_iter):
+        indices = assign_step(inputs, centroids)
+        new_centroids = update_step(inputs,indices,k)
+
+        # dist_sq = np.array([min([np.inner(c-x,c-x) for c in centroids]) for x in inputs])
+        # probs = dist_sq/dist_sq.sum()
+        # cumulative_probs = probs.cumsum()
+
+        #calc differences between original and new centroids
+        x_1 = np.linalg.norm(new_centroids - centroids,axis=1)
+        x_2 = np.linalg.norm(centroids,axis=1)
+        diff = x_1 / x_2
+
+        if np.any(tol > diff): #if it is below tolerance threshold
+            break
+            # return centroids ?
+        centroids = new_centroids  #replaces old centroids
+    return centroids
+

@@ -36,7 +36,9 @@ class KmeansClassifier(object):
         :return: None
         """
         # TODO (hint: use kmeans())
-        pass
+        self.cluster_centers = kmeans(X, self.k, self.max_iter, self.tol) #perform k-means on the current label
+
+
 
     def predict(self, X, centroid_assignments):
         """
@@ -48,7 +50,22 @@ class KmeansClassifier(object):
         """
 
         # TODO: complete this step only after having plotted the centroids!
-        pass
+        
+        indices = [] # list of closest labels
+
+        for j in range(len(X)): #i is index, j is corresponding vector
+            subtracted = np.subtract(self.cluster_centers, X[j])
+            
+            distance = np.linalg.norm(subtracted, axis=1)
+            centroid = np.argmin(distance) #current centroid
+            indices.append(centroid)
+            # for centroid in centroid_assignments:
+            #     dist = np.linalg.norm(np.array(j-centroid), axis=1) #difference of two vectors + get norm
+            #     distances.append(dist)
+            # closest_centroid_index =  min(range(len(distances)), key=lambda x: distances[x])
+            # indices.append(closest_centroid_index)
+        return np.array(indices)
+
 
     def accuracy(self, data, centroid_assignments):
         """
