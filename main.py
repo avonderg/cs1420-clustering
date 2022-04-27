@@ -102,7 +102,7 @@ def runKMeans():
     # DO NOT MODIFY ABOVE THIS LINE!
 
     # TODO: uncomment below to plot the centroids for the 10 digits (0-9).
-    # plot_Kmeans(kmeans_model)
+    plot_Kmeans(kmeans_model)
 
     # TODO: fill out centroid_assignments below based on the visualization of plot_Kmeans (in order from left to right). In this step, you are assigning each centroid to its most resembling digit (0-9).
     # DO NOT add print lines below test_Kmeans on final handin
